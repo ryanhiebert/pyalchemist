@@ -63,6 +63,13 @@ class Transmutation:
         return Dst(**properties)
 
 
+def ritual(*args, **kwargs):
+    def _decorator(callable):
+        return Ritual(callable, *args, **kwargs)
+
+    return _decorator
+
+
 class Ritual:
     """
     A step in a transmutation.
