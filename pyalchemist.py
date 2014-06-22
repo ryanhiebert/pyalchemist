@@ -40,6 +40,29 @@ class Alchemist:
                     Src.__name__, Dst.__name__))
 
 
+class Transmutation:
+    """
+    A series of rituals that transform an object between types.
+    """
+    def __init__(self):
+        self.rituals = []
+
+    def ritual(self, *args, **kwargs):
+        def _decorator(callable):
+            ritual = Ritual(callable, *args, **kwargs)
+            self.rituals.append(ritual)
+            return ritual
+
+    def transmute(self, src, Dst):
+        """Run all the rituals in this transmutation"""
+        properties = {}
+
+        for ritual in self.rituals:
+            properties.update(ritual(src))
+
+        return Dst(**properties)
+
+
 class Ritual:
     """
     A step in a transmutation.
