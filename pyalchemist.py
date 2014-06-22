@@ -3,39 +3,41 @@
 
 class Alchemist:
     """
-    Runs a series of transmutations to return a new object.
+    Look up and perform the correct Transmutation.
     """
 
     def __init__(self, cls=None):
         self.cls = cls
-        self.transmutations = []
+        self.transmutations = {}
 
-    def transmutation(self, *args, **kwargs):
+    def transmutation(self, Src, Dst):
         """
-        A decorator used to create and add a transmutation.
+        Decorate a transmutation to add.
         """
-        def _decorator(callable):
-            transmutation = Transmutation(callable, *args, **kwargs)
-            self.add_transmutation(transmutation)
-            return transmutation
+        def _decorator(transmutation):
+            self.add_transmutation(Src, Dst, transmutation)
 
         return _decorator
 
-    def add_transmutation(self, transmutation):
+    def add_transmutation(self, Src, Dst, transmutation):
         """
-        Safely transmute the designated field from src to dst.
+        Add a transmutation to the alchemist's arsenal.
+
+        src and dst are classes that this transmutation works on.
         """
-        self.transmutations.append(transmutation)
+        self.transmutations[Dst][Src] = transmutation
 
-    def transmute(self, src, cls=None):
-        if cls is not None:
-            self.cls = cls
-
-        properties = {}
-        for transmutation in self.transmutations:
-            properties.update(transmutation(src))
-
-        return self.cls(**properties)
+    def transmute(src, Dst):
+        """
+        Find and perform the correct transmutation.
+        """
+        Src = type(src)
+        try:
+            self.transmutations[Dst][Src](src, Dst)
+        except KeyError:
+            raise KeyError(
+                'No transmutation found from {} to {}'.format(
+                    Src.__name__, Dst.__name__))
 
 
 class Transmutation:
