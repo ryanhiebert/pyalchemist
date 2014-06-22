@@ -2,7 +2,7 @@
 A sketch of usage of pyalchemist, before it's written.
 """
 
-from pyalchemist import Alchemist
+from pyalchemist import Alchemist, Transmutation, ritual
 
 class A:
     foo, bar, answer = 1, 2, 42
@@ -15,17 +15,23 @@ class B:
 
 alchemist = Alchemist(B)
 
-@alchemist.transmutation(['foo', 'bar'])
-def transmute_foo_bar(a, b):
-    b.fish = a.foo + a.bar
 
-@alchemist.transmutation(['answer'], ['life'])
-def transmute_answer_life(a, b):
-    b.life = a.answer if a.answer == 42 else None
+@alchemist.transmutation(A, B)
+class A2BTransmutation(Transmutation):
+
+    @ritual(['foo', 'bar'])
+    def foo_bar(a, b):
+        b.fish = a.foo + a.bar
+        return b
+
+    @ritual(['answer'], ['life'])
+    def answer_life(a, b):
+        b.life = a.answer if a.answer == 42 else None
+        return b
 
 
 a = A()
-b = alchemist.transmute(a)
+b = alchemist.transmute(a, B)
 
 assert b.life == 42
 assert b.fish == 3
