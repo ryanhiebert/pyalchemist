@@ -52,3 +52,33 @@ class Transmutation:
         return {}
 
 
+class SafeObject:
+    """
+    An mutable object, that can restrict access to given attributes.
+    """
+
+    def __init__(self, allowed_fields=None):
+        object.__setattr__(self, 'allowed_fields', allowed_fields)
+        object.__setattr__(self, 'dict', {})
+
+    def __getattr__(self, name):
+        try:
+            return self.dict[name]
+        except KeyError:
+            raise AttributeError(
+                'SafeObject({}) has no attribute {}'.format(
+                    repr(self.allowed_fields), name))
+
+    def __setattr__(self, name, value):
+        if self.allowed_fields is None or name in self.allowed_fields:
+            self.dict[name] = value
+        else:
+            raise AttributeError('Setting \'{}\' attribute not allowed')
+
+    def __delattr__(self, name):
+        try:
+            del self.dict[name]
+        except KeyError:
+            raise AttributeError(name)
+
+
