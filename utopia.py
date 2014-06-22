@@ -17,7 +17,7 @@ alchemist = Alchemist(B)
 
 
 @alchemist.transmutation(A, B)
-class A2BTransmutation(Transmutation):
+class A2BTransmutation(metaclass=Transmutation):
 
     @ritual(['foo', 'bar'])
     def foo_bar(a, b):
@@ -38,4 +38,20 @@ assert b.fish == 3
 
 
 
+transmutation = Transmutation()
 
+@transmutation.ritual(['foo', 'bar'])
+def foo_bar_ritual(a, b):
+    b.fish = a.foo + a.bar
+    return b
+
+@transmutation.ritual(['answer'], ['life'])
+def answer_life(a, b):
+    b.life = a.answer if a.answer == 42 else None
+
+
+a = A()
+b = transmutation.transmute(a, B)
+
+assert b.life == 42
+assert b.fish == 3
