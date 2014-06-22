@@ -40,9 +40,9 @@ class Alchemist:
                     Src.__name__, Dst.__name__))
 
 
-class Transmutation:
+class Ritual:
     """
-    A step that an alchemist takes.
+    A step in a transmutation.
     """
 
     def __init__(self, callable, src_fields=None, dst_fields=None):
