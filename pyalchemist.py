@@ -49,7 +49,9 @@ class Transmutation:
         self.dst_fields = dst_fields
 
     def __call__(self, src):
-        return {}
+        dst = SafeObject(self.dst_fields)
+        self.callable(src, dst)
+        return dst.dict
 
 
 class SafeObject:
